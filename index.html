@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Image Switcher</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5; /* Сделает изображение полупрозрачным */
+        }
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: #0f0a18;
+        }
+        .modal-content {
+            background-color: #4d3d6b;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 100%;
+            height: auto;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-button {
+            background-color: #9669ff;
+            color: white;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .modal-button:hover {
+            background-color: #45a049;
+        }
+        #modalText {
+            color: rgb(255, 255, 255); /* Цвет текста */
+            font-size: 24px; /* Размер шрифта */
+        }
+        #modalImage {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1 style="font-family: Helvetica, sans-serif;">Нажми на кейс, чтобы открыть его</h1>
+        <img id="mainImage" src="./id_154.png" alt="Closed Case" onclick="getCash()">
+        <img id="loadingImage" src="./gift-box.gif" alt="Loading" style="display: none;">
+    </div>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img id="modalImage" src="" alt="Skin">
+            <p id="modalText"></p>
+            <button id= "modalButton" class="modal-button" onclick="closeModal()">Забрать скин</button>
+        </div>
+    </div>
+    <script>
+    const tg = window.Telegram.WebApp;
+        
+    const values = [20, 50, 70];
+    const weights = [0.5, 0.3, 0.2];
+
+    // Функция для генерации случайного числа на основе весов
+    function getRandomWithWeights(values, weights) {
+            let totalWeight = weights.reduce((acc, weight) => acc + weight, 0);
+            let randomNum = Math.random() * totalWeight;
+            let weightSum = 0;
+
+            for (let i = 0; i < values.length; i++) {
+                weightSum += weights[i];
+                if (randomNum < weightSum) {
+                    return values[i];
+                }
+            }
+        }
+
+    const cash = getRandomWithWeights(values, weights);
+
+    // Приложение на полный экран
+    tg.expand();
+
+        function getCash() {
+            let box_el = document.getElementById("mainImage");
+
+            box_el.onclick = null;
+
+            // Отображаем анимацию загрузки
+            const img = document.getElementById('mainImage');
+            const loadingImg = document.getElementById('loadingImage');
+            img.style.display = 'none';
+            loadingImg.style.display = 'block';
+            
+            setTimeout(() => {
+                loadingImg.style.display = 'none'; // Скрываем анимацию загрузки
+                showModal();
+            }, 4500);
+        }
+
+        function showModal() {
+            const images = {
+                20: './P-90.png',
+                50: './M16.png',
+                70: './AK.png'
+            };
+
+            const texts = {
+                20: 'P-90',
+                50: 'M16',
+                70: 'AK-47',
+            };
+
+            // Устанавливаем изображение и текст в зависимости от значения cash
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = images[cash];
+
+            const modalText = document.getElementById('modalText');
+            modalText.textContent = texts[cash];
+            
+            const modal = document.getElementById('myModal');
+            const modalButton = document.getElementById('modalButton');
+            modalButton.textContent = `Забрать ${cash} 💸`;
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+            tg.sendData(cash.toString());
+        }
+
+        // Закрываем модальное окно при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+    
+</body>
+</html>
