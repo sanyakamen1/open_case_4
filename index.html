@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Image Switcher</title>
+    <title>Case Standoff 2</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -60,10 +60,6 @@
         .modal-button:hover {
             background-color: #45a049;
         }
-        #modalText {
-            color: rgb(255, 255, 255); /* Цвет текста */
-            font-size: 24px; /* Размер шрифта */
-        }
         #modalImage {
             height: 100%;
             width: 100%;
@@ -73,79 +69,51 @@
 </head>
 <body>
     <div class="box">
-        <h1 style="font-family: Helvetica, sans-serif;">Нажми на кейс, чтобы открыть его</h1>
-        <img id="mainImage" src="./id_154.png" alt="Closed Case" onclick="getCash()">
-        <img id="loadingImage" src="./gift-box.gif" alt="Loading" style="display: none;">
+        <img id="mainImage" src="./открытие кейса.jpg" alt="Closed Case" onclick="getCash()">
     </div>
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <img id="modalImage" src="" alt="Skin">
-            <p id="modalText"></p>
             <button id= "modalButton" class="modal-button" onclick="closeModal()">Забрать скин</button>
         </div>
     </div>
     <script>
     const tg = window.Telegram.WebApp;
         
-    const values = [20, 50, 70];
-    const weights = [0.5, 0.3, 0.2];
-
-    // Функция для генерации случайного числа на основе весов
-    function getRandomWithWeights(values, weights) {
-            let totalWeight = weights.reduce((acc, weight) => acc + weight, 0);
-            let randomNum = Math.random() * totalWeight;
-            let weightSum = 0;
-
-            for (let i = 0; i < values.length; i++) {
-                weightSum += weights[i];
-                if (randomNum < weightSum) {
-                    return values[i];
-                }
-            }
-        }
-
-    const cash = getRandomWithWeights(values, weights);
+    // Функция для получения параметра из URL
+    function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            res = decodeURIComponent(results[2].replace(/\+/g, ' '))
+            return res;
+    }
+        
+    const cash = getParameterByName('cash');
 
     // Приложение на полный экран
     tg.expand();
 
-        function getCash() {
+    function getCash() {
             let box_el = document.getElementById("mainImage");
-
             box_el.onclick = null;
-
-            // Отображаем анимацию загрузки
-            const img = document.getElementById('mainImage');
-            const loadingImg = document.getElementById('loadingImage');
-            img.style.display = 'none';
-            loadingImg.style.display = 'block';
-            
-            setTimeout(() => {
-                loadingImg.style.display = 'none'; // Скрываем анимацию загрузки
-                showModal();
-            }, 4500);
+            showModal();
         }
 
-        function showModal() {
+    function showModal() {
             const images = {
-                20: './P-90.png',
-                50: './M16.png',
-                70: './AK.png'
+                202: 'гифки выпадения/necromancer.gif',
+                230: 'гифки выпадения/Famas.gif',
+                66: 'гифки выпадения/AWM-Festal-Wrap.gif',
+                249: 'гифки выпадения/AKR12-Geometric.gif',
+                240: 'гифки выпадения/bubblegum.gif',
+                295: 'гифки выпадения/AKR-Tag-King.gif'
             };
 
-            const texts = {
-                20: 'P-90',
-                50: 'M16',
-                70: 'AK-47',
-            };
-
-            // Устанавливаем изображение и текст в зависимости от значения cash
+            // Устанавливаем изображение в зависимости от значения cash
             const modalImage = document.getElementById('modalImage');
             modalImage.src = images[cash];
-
-            const modalText = document.getElementById('modalText');
-            modalText.textContent = texts[cash];
             
             const modal = document.getElementById('myModal');
             const modalButton = document.getElementById('modalButton');
@@ -153,17 +121,18 @@
             modal.style.display = 'block';
         }
 
-        function closeModal() {
+    function closeModal() {
             const modal = document.getElementById('myModal');
             modal.style.display = 'none';
             tg.sendData(cash.toString());
         }
 
         // Закрываем модальное окно при клике вне его
-        window.onclick = function(event) {
+    window.onclick = function(event) {
             const modal = document.getElementById('myModal');
             if (event.target == modal) {
                 modal.style.display = 'none';
+                tg.sendData(cash.toString());
             }
         }
     </script>
